@@ -1,12 +1,16 @@
 <script>
 	import { Button, Modal, Select, SelectItem } from 'carbon-components-svelte';
+	import { subject, num, numbers } from './stores.js';
 
-	export let num
+	export let semesterNum, classes
+
 	let open = false
+
+	const subjects = Object.keys(classes)
 </script>
 
 <div>
-	<h2>Semester {num}</h2>
+	<h2>Semester {semesterNum}</h2>
 	<Button on:click={() => open = true}>Add Class</Button>
 	<Modal
 		bind:open
@@ -19,14 +23,18 @@
 		<div class='flex flex-row justify-around'>
 			<div>
 				<p>Subject</p>
-				<Select>
-					<SelectItem value="STAT"/>
+				<Select bind:selected={$subject}>
+					{#each subjects as subject}
+						<SelectItem value={subject}/>
+					{/each}
 				</Select>
 			</div>
 			<div>
 				<p>Number</p>
-				<Select>
-					<SelectItem value="400"/>
+				<Select bind:selected={$num}>
+					{#each $numbers as number}
+						<SelectItem value={number}/>
+					{/each}
 				</Select>
 			</div>
 		</div>

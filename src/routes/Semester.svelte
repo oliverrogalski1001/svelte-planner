@@ -10,7 +10,7 @@
 	}
 
 	let open = false
-	// disable number combobox if subject isnt chosen
+	// disable number combobox if subject isn't chosen
 	$: disabled = $subject === undefined
 
 	// change current number when the subject changes
@@ -19,7 +19,7 @@
 	const subjects = Object.keys(classes)
 </script>
 
-<div>
+<div class='p-4'>
 	<h2>Semester {semesterNum}</h2>
 	<Button on:click={() => open = true}>Add Class</Button>
 	<Modal

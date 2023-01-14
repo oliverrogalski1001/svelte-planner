@@ -5,25 +5,29 @@
 	import { subject, num, numbers } from './stores.js';
 	import classes from '../spring2023.json'
 	import Semester from "./Semester.svelte"
+	import { Button } from 'carbon-components-svelte';
 
 	let semesters = Array.from(Array(8).keys()).map(i => i + 1);
 
-	const main = queryParam("main", {
-		encode: value => value === "" ? value : btoa(value),
-		decode: value => value === "" ? value : atob(value),
-		defaultValue: "hello"
+	const schedule = queryParam("schedule", {
+		encode: value => JSON.stringify(value),
+		decode: value => JSON.parse(value),
+		defaultValue: [{
+			semID: 1,
+			subject: "STAT",
+			code: "400"
+		}]
 	})
 
 </script>
 
 <div class='text-center'>
 	<h1 class='p-4'>UIUC Class Planner</h1>
-	<h2 class='p-4'>{$main !== null ? $main : ""}</h2>
+	<Button on:click={() => console.log($schedule)}>check</Button>
 	<h2>{$subject}</h2>
 	<h2>{$numbers}</h2>
 	<h2>{$num}</h2>
-	<input bind:value={$main} class='border-2' />
-	<div class='flex flex-row'>
+	<div class='flex flex-row overflow-x-scroll'>
 		{#each semesters as semester}
 			<Semester semesterNum={semester} classes={classes} />
 		{/each}

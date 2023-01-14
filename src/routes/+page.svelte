@@ -24,8 +24,8 @@
 	})
 
 	const main = queryParam("main", {
-		encode: value => value !== "" ? value : btoa(value),
-		decode: value => value !== "" ? value : atob(value),
+		encode: value => value === "" ? value : btoa(value),
+		decode: value => value === "" ? value : atob(value),
 		defaultValue: "hello"
 	})
 

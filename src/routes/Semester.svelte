@@ -16,6 +16,13 @@
 	// change current number when the subject changes
 	$: num.set($numbers[0])
 
+	let classObj
+	$: if ($subject !== undefined && $num !== undefined) {
+		classObj = classes[$subject].filter(course => course.number === $num)[0]
+	} else {
+		classObj = undefined
+	}
+
 	const subjects = Object.keys(classes)
 </script>
 
@@ -30,6 +37,7 @@
 		on:click:button--primary={() => open = false}
 		on:click:button--secondary={() => open = false}
 	>
+	<div class='flex flex-col align-middle'>
 		<div class='flex flex-row justify-around'>
 			<div>
 				<ComboBox
@@ -50,6 +58,13 @@
 				/>
 			</div>
 		</div>
+		{#if classObj !== undefined}
+			<div class='mt-4'>
+				<h4>{classObj.title}</h4>
+				<h4>Credit Hours: {classObj.hours}</h4>
+			</div>
+		{/if}
+	</div>
 	</Modal>
 </div>
 
@@ -58,7 +73,16 @@
         overflow: visible;
     }
 
+		:global(.bx--modal-content p) {
+        padding-right: 0;
+		}
+
+		:global(.bx--modal-header) {
+				padding-right: 0;
+		}
+
     :global(.bx--modal.is-visible .bx--modal-container) {
         overflow: visible;
+        padding-right: 0;
     }
 </style>

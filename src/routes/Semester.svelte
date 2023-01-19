@@ -1,88 +1,130 @@
 <script>
 	import { Button, Modal, ComboBox } from 'carbon-components-svelte';
 	import { subject, num, numbers } from './stores.js';
+	import Add from 'carbon-icons-svelte/lib/Add.svelte';
+	import Course from './Course.svelte';
 
-	export let semesterNum, classes
+	export let semesterNum, classes, schedule;
+	let sub;
+	schedule.subscribe((value) => {
+		sub = value;
+	});
 
+	// filter function for typing into the combobox in modal
 	function shouldFilterItem(item, value) {
-		if (!value) return true
-		return item.text.toLowerCase().includes(value.toLowerCase())
+		if (!value) return true;
+		return item.text.toLowerCase().includes(value.toLowerCase());
 	}
 
-	let open = false
+	let open = false;
 	// disable number combobox if subject isn't chosen
-	$: disabled = $subject === undefined
+	$: disabled = $subject === undefined;
 
 	// change current number when the subject changes
-	$: num.set($numbers[0])
+	$: num.set($numbers[0]);
 
-	let classObj
-	$: if ($subject !== undefined && $num !== undefined) {
-		classObj = classes[$subject].filter(course => course.number === $num)[0]
-	} else {
-		classObj = undefined
+	// create list of courses that are in this semester
+	let semCourses = [];
+	$: if (sub !== null) {
+		semCourses = sub.filter((course) => course.semID === semesterNum);
 	}
 
-	const subjects = Object.keys(classes)
+	// display selected class in modal
+	let classObj;
+	$: if ($subject !== undefined && $num !== undefined) {
+		classObj = classes[$subject][$num];
+	} else {
+		classObj = undefined;
+	}
+
+	// Add class in modal
+	const addClass = () => {
+		if (warn) {
+			return;
+		}
+		open = false;
+		let newClass = {
+			semID: semesterNum,
+			subject: $subject,
+			code: $num
+		};
+		schedule.update((n) => [...n, newClass]);
+	};
+
+	// warning if courses already exists in users schedule
+	let warn = false;
+	$: if (sub !== null) {
+		warn = sub.filter((course) => $subject === course.subject && $num === course.code).length > 0;
+	}
+
+	const subjects = Object.keys(classes);
 </script>
 
-<div class='p-4'>
+<div class="p-4 w-64 flex-shrink-0">
 	<h2>Semester {semesterNum}</h2>
-	<Button on:click={() => open = true}>Add Class</Button>
+	{#each semCourses as course}
+		<Course {course} {classes} {schedule} />
+	{/each}
+	<div class="mt-2">
+		<Button on:click={() => (open = true)} icon={Add}>Add Class</Button>
+	</div>
 	<Modal
 		bind:open
-		modalHeading='Add Class'
+		modalHeading="Add Class"
 		primaryButtonText="Add"
 		secondaryButtonText="Cancel"
-		on:click:button--primary={() => open = false}
-		on:click:button--secondary={() => open = false}
+		on:click:button--primary={() => addClass()}
+		on:click:button--secondary={() => (open = false)}
 	>
-	<div class='flex flex-col align-middle'>
-		<div class='flex flex-row justify-around'>
-			<div>
-				<ComboBox
-					titleText='Subject'
-					placeholder='Select Subject'
-					items={subjects.map(sub => ({id: sub, text: sub}))}
-					bind:selectedId={$subject}
-					on:clear={() => num.set("")}
-					{shouldFilterItem}
-				/>
+		<div class="flex flex-col align-middle">
+			<div class="flex flex-row justify-around">
+				<div>
+					<ComboBox
+						titleText="Subject"
+						placeholder="Select Subject"
+						items={subjects.map((sub) => ({ id: sub, text: sub }))}
+						bind:selectedId={$subject}
+						on:clear={() => num.set('')}
+						{shouldFilterItem}
+					/>
+				</div>
+				<div>
+					<ComboBox
+						titleText="Number"
+						items={$numbers.map((n) => ({ id: n, text: n }))}
+						bind:selectedId={$num}
+						{disabled}
+						{warn}
+						warnText="This course already exists in your plan."
+					/>
+				</div>
 			</div>
-			<div>
-				<ComboBox
-					titleText='Number'
-					items={$numbers.map(n => ({id: n, text: n}))}
-					bind:selectedId={$num}
-					disabled={disabled}
-				/>
-			</div>
+			{#if classObj !== undefined}
+				<div class="mt-4">
+					<h4>{$subject} {$num}: {classObj.title}</h4>
+					<p class="my-1">{classObj.description}</p>
+					<h4>Credit Hours: {classObj.hours}</h4>
+				</div>
+			{/if}
 		</div>
-		{#if classObj !== undefined}
-			<div class='mt-4'>
-				<h4>{classObj.title}</h4>
-				<h4>Credit Hours: {classObj.hours}</h4>
-			</div>
-		{/if}
-	</div>
 	</Modal>
 </div>
 
 <style>
-    :global(.bx--modal-content) {
-        overflow: visible;
-    }
+	:global(.bx--modal-content) {
+		overflow: visible;
+	}
 
-		:global(.bx--modal-content p) {
-        padding-right: 0;
-		}
+	:global(.bx--modal-content p) {
+		padding-right: 0;
+	}
 
-		:global(.bx--modal-header) {
-				padding-right: 0;
-		}
+	:global(.bx--modal-header) {
+		padding-right: 0;
+	}
 
-    :global(.bx--modal.is-visible .bx--modal-container) {
-        overflow: visible;
-        padding-right: 0;
-    }
+	:global(.bx--modal.is-visible .bx--modal-container) {
+		overflow: visible;
+		padding-right: 0;
+	}
 </style>

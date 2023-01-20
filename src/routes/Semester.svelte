@@ -67,15 +67,16 @@
 	}
 
 	const subjects = Object.keys(classes);
-	const flipDurationMs = 10;
+	const flipDurationMs = 150;
 
 	function handleDndConsider(e) {
 		semCourses = e.detail.items;
 	}
 	function handleDndFinalize(e) {
-		console.log(e.detail.info);
 		if (e.detail.info.trigger === 'droppedIntoZone') {
-			let newSchedule = sub.map((course) => {
+			let newSchedule = sub.filter((course) => course.semID !== semesterNum && course.id !== e.detail.info.id);
+			newSchedule = [...newSchedule, ...e.detail.items];
+			newSchedule = newSchedule.map((course) => {
 				if (course.id === e.detail.info.id) {
 					course.semID = semesterNum;
 					course.id = semesterNum + course.subject + course.code;
@@ -88,12 +89,12 @@
 </script>
 
 <div class="p-4 w-64 flex-shrink-0">
-	<Button on:click={() => console.log(semCourses)}>Check</Button>
 	<h2>Semester {semesterNum}</h2>
 	<section
 		use:dndzone={{ items: semCourses, flipDurationMs }}
 		on:consider={handleDndConsider}
 		on:finalize={handleDndFinalize}
+		class="min-h-1"
 	>
 		{#each semCourses as course (course.id)}
 			<div animate:flip={{ duration: flipDurationMs }}>

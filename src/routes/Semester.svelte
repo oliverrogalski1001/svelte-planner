@@ -1,6 +1,8 @@
 <script>
 	import { Button, Modal, ComboBox } from 'carbon-components-svelte';
 	import { subject, num, numbers } from './stores.js';
+	import { flip } from 'svelte/animate';
+	import { dndzone } from 'svelte-dnd-action';
 	import Add from 'carbon-icons-svelte/lib/Add.svelte';
 	import Course from './Course.svelte';
 
@@ -29,6 +31,12 @@
 		semCourses = sub.filter((course) => course.semID === semesterNum);
 	}
 
+	/*	$: {
+		semCourses.map((course) => {
+			course.semID = semesterNum;
+		});
+	}*/
+
 	// display selected class in modal
 	let classObj;
 	$: if ($subject !== undefined && $num !== undefined) {
@@ -46,7 +54,8 @@
 		let newClass = {
 			semID: semesterNum,
 			subject: $subject,
-			code: $num
+			code: $num,
+			id: semesterNum + $subject + $num
 		};
 		schedule.update((n) => [...n, newClass]);
 	};
@@ -58,13 +67,40 @@
 	}
 
 	const subjects = Object.keys(classes);
+	const flipDurationMs = 10;
+
+	function handleDndConsider(e) {
+		semCourses = e.detail.items;
+	}
+	function handleDndFinalize(e) {
+		console.log(e.detail.info);
+		if (e.detail.info.trigger === 'droppedIntoZone') {
+			let newSchedule = sub.map((course) => {
+				if (course.id === e.detail.info.id) {
+					course.semID = semesterNum;
+					course.id = semesterNum + course.subject + course.code;
+				}
+				return course;
+			});
+			schedule.set(newSchedule);
+		}
+	}
 </script>
 
 <div class="p-4 w-64 flex-shrink-0">
+	<Button on:click={() => console.log(semCourses)}>Check</Button>
 	<h2>Semester {semesterNum}</h2>
-	{#each semCourses as course}
-		<Course {course} {classes} {schedule} />
-	{/each}
+	<section
+		use:dndzone={{ items: semCourses, flipDurationMs }}
+		on:consider={handleDndConsider}
+		on:finalize={handleDndFinalize}
+	>
+		{#each semCourses as course (course.id)}
+			<div animate:flip={{ duration: flipDurationMs }}>
+				<Course {course} {classes} {schedule} />
+			</div>
+		{/each}
+	</section>
 	<div class="mt-2">
 		<Button on:click={() => (open = true)} icon={Add}>Add Class</Button>
 	</div>

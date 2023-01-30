@@ -41,7 +41,7 @@
 
 	// Add class in modal
 	const addClass = () => {
-		if (warn) {
+		if (warn || $subject === undefined) {
 			return;
 		}
 		open = false;

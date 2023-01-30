@@ -5,7 +5,10 @@
 	import classes from '../newSpring2023';
 	import { CopyButton } from 'carbon-components-svelte';
 	import { queryParam } from 'sveltekit-search-params';
+	import { inject } from '@vercel/analytics';
 	import Intro from './Intro.svelte';
+
+	inject();
 
 	let semesters = Array.from(Array(8).keys()).map((i) => i + 1);
 

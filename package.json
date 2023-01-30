@@ -28,6 +28,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@vercel/analytics": "^0.1.8",
 		"fast-xml-parser": "^4.0.13",
 		"svelte-dnd-action": "^0.9.22"
 	}

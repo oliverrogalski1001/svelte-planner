@@ -3,7 +3,7 @@ module.exports = {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     minHeight: {
-      '1': '1rem',
+      '10': '10rem',
     },
     extend: {
       fontFamily: {

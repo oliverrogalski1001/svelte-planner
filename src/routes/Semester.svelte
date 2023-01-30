@@ -31,12 +31,6 @@
 		semCourses = sub.filter((course) => course.semID === semesterNum);
 	}
 
-	/*	$: {
-		semCourses.map((course) => {
-			course.semID = semesterNum;
-		});
-	}*/
-
 	// display selected class in modal
 	let classObj;
 	$: if ($subject !== undefined && $num !== undefined) {
@@ -66,16 +60,35 @@
 		warn = sub.filter((course) => $subject === course.subject && $num === course.code).length > 0;
 	}
 
+	// list of all subjects
 	const subjects = Object.keys(classes);
+
+	// drag and drop animation constant
 	const flipDurationMs = 150;
 
+	// change courses in current semester when course is being dragged
 	function handleDndConsider(e) {
 		semCourses = e.detail.items;
 	}
+
+	// called when course is dropped after being dragged
 	function handleDndFinalize(e) {
+		console.log(e.detail.info);
+
+		if (e.detail.info.trigger === 'droppedOutsideOfAny') {
+			semCourses = e.detail.items;
+			return;
+		}
+
+		// if the function was called from the zone that the course was dropped into
 		if (e.detail.info.trigger === 'droppedIntoZone') {
+			// filter out courses in dropped semester and one that was dropped
 			let newSchedule = sub.filter((course) => course.semID !== semesterNum && course.id !== e.detail.info.id);
+
+			// create new schedule array with semester items in correct order
 			newSchedule = [...newSchedule, ...e.detail.items];
+
+			// change dropped course semester id to dropped semester
 			newSchedule = newSchedule.map((course) => {
 				if (course.id === e.detail.info.id) {
 					course.semID = semesterNum;
@@ -83,6 +96,7 @@
 				}
 				return course;
 			});
+
 			schedule.set(newSchedule);
 		}
 	}
@@ -94,7 +108,7 @@
 		use:dndzone={{ items: semCourses, flipDurationMs }}
 		on:consider={handleDndConsider}
 		on:finalize={handleDndFinalize}
-		class="min-h-1"
+		class="min-h-10"
 	>
 		{#each semCourses as course (course.id)}
 			<div animate:flip={{ duration: flipDurationMs }}>

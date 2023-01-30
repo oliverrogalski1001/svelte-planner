@@ -73,8 +73,7 @@
 
 	// called when course is dropped after being dragged
 	function handleDndFinalize(e) {
-		console.log(e.detail.info);
-
+		// if course was picked up but not dropped into any zone return nothing
 		if (e.detail.info.trigger === 'droppedOutsideOfAny') {
 			semCourses = e.detail.items;
 			return;

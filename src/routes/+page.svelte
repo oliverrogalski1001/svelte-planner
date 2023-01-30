@@ -3,8 +3,9 @@
 	import 'carbon-components-svelte/css/all.css';
 	import Semester from './Semester.svelte';
 	import classes from '../newSpring2023';
-	import { Button } from 'carbon-components-svelte';
+	import { CopyButton } from 'carbon-components-svelte';
 	import { queryParam } from 'sveltekit-search-params';
+	import Intro from './Intro.svelte';
 
 	let semesters = Array.from(Array(8).keys()).map((i) => i + 1);
 
@@ -47,11 +48,17 @@
 </script>
 
 <div class="text-center">
-	<h1 class="p-4">UIUC Class Planner</h1>
-	<Button on:click={() => console.log($schedule)}>check</Button>
+	<div class="flex flex-col items-center">
+		<h1 class="p-4">UIUC Class Planner</h1>
+		<div class="flex flex-row items-center">
+			<h5 class="m-1 font-light">Save your progress by copying the link here.</h5>
+			<CopyButton copy={() => navigator.clipboard.writeText(window.location.href)} />
+		</div>
+	</div>
 	<div class="flex flex-row overflow-x-scroll">
 		{#each semesters as semester}
 			<Semester semesterNum={semester} {classes} {schedule} />
 		{/each}
 	</div>
+	<Intro />
 </div>

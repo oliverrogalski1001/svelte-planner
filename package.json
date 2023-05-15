@@ -28,8 +28,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@supabase/auth-helpers-sveltekit": "^0.9.4",
+		"@supabase/supabase-js": "^2.21.0",
 		"@vercel/analytics": "^0.1.8",
 		"fast-xml-parser": "^4.0.13",
+		"lodash-es": "^4.17.21",
 		"svelte-dnd-action": "^0.9.22"
 	}
 }

@@ -1,7 +1,7 @@
 <script>
-	import { Button, Modal } from 'carbon-components-svelte';
+	import { Button, Modal } from 'carbon-components-svelte'
 
-	let open = true;
+	let open = true
 </script>
 
 <Modal passiveModal bind:open modalHeading="">
@@ -11,7 +11,8 @@
 		available.
 	</h5>
 	<h5 class="mb-3 font-light">
-		Copy the link and save it to if you want to continue planning your schedule later or share it with your friends.
+		Copy the link or sign up with Google to save your schedule if you want to continue planning your schedule later or
+		share it with your friends.
 	</h5>
 	<Button on:click={() => (open = false)}>Get Started</Button>
 </Modal>
